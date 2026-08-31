@@ -10,6 +10,10 @@ on:
   push:
     paths:
       - '.github/workflows/agentic-benchmark.yml'
+      - 'backend/app/services/baseline_service.py'
+      - 'backend/app/services/llm_service.py'
+      - 'backend/app/services/benchmark_service.py'
+      - 'backend/benchmark/cases.json'
 
 permissions:
   contents: read
