@@ -6,7 +6,7 @@ on:
       model:
         description: OpenAI model used by both baseline and ChangeGuard
         required: false
-        default: gpt-5.6
+        default: gpt-5.6-luna
   push:
     paths:
       - '.github/workflows/agentic-benchmark.yml'
@@ -21,7 +21,7 @@ jobs:
     env:
       CHANGEGUARD_LLM_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       CHANGEGUARD_LLM_BASE_URL: https://api.openai.com/v1
-      CHANGEGUARD_LLM_MODEL: ${{ inputs.model || 'gpt-5.6' }}
+      CHANGEGUARD_LLM_MODEL: ${{ inputs.model || 'gpt-5.6-luna' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
