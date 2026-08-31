@@ -1,0 +1,45 @@
+name: Submission Package
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/submission-package.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build clean source archive
+        shell: bash
+        run: |
+          mkdir -p dist
+          zip -r dist/ChangeGuard-submission.zip . \
+            -x '.git/*' \
+            -x 'dist/*' \
+            -x '**/__pycache__/*' \
+            -x '**/*.pyc' \
+            -x '**/.pytest_cache/*' \
+            -x '**/.mypy_cache/*' \
+            -x '**/.ruff_cache/*' \
+            -x '**/.venv/*' \
+            -x '**/venv/*' \
+            -x '**/.env' \
+            -x '**/*.db' \
+            -x '**/*.sqlite' \
+            -x '**/*.sqlite3'
+          unzip -l dist/ChangeGuard-submission.zip | tail -n 1
+
+      - name: Upload submission archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: changeguard-submission-source
+          path: dist/ChangeGuard-submission.zip
+          if-no-files-found: error
+          retention-days: 30
