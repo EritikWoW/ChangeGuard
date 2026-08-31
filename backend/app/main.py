@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
@@ -15,15 +18,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API routes are registered before static/frontend mounts.
 app.include_router(router)
 app.include_router(hackathon_router)
 
-# The frontend references CSS, JS and SVG files through /assets/*.
-# Mount the frontend directory at /assets first so these URLs resolve to
-# styles.css, app.js and changeguard-svg-icons/* inside the frontend root.
+# Assets are mounted separately so the SPA can reference CSS, JS and SVGs.
 app.mount("/assets", StaticFiles(directory=settings.frontend_dir), name="assets")
 
-# Serve index.html and any root-level frontend files from /.
-# Keep this catch-all mount last so /api/* and /assets/* win first.
+
+@app.get("/", response_class=HTMLResponse)
+async def frontend_index():
+    """Serve the canonical UI plus the hackathon/submission enhancement layer."""
+    html = (Path(settings.frontend_dir) / "index.html").read_text(encoding="utf-8")
+    enhancement = '<script src="/assets/app-hackathon.js"></script>'
+    if enhancement not in html:
+        html = html.replace("</body>", enhancement + "\n</body>")
+    return HTMLResponse(html)
+
+
+# Keep the static catch-all last so /api/*, /assets/* and / win first.
 app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")
