@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ChangeGuard — Infrastructure Safety AI</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark"><svg class="ui-icon lg"><use href="/assets/changeguard-svg-icons/sprite.svg#logo-shield"></use></svg></div>
+      <div><div class="brand-name">ChangeGuard</div><div class="brand-sub">Infrastructure Safety AI</div></div>
+    </div>
+    <nav class="nav">
+      <button class="nav-item" data-view="dashboard"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#dashboard"></use></svg></span> Dashboard</button>
+      <button class="nav-item active" data-view="analysis"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#new-analysis"></use></svg></span> New Analysis</button>
+      <button class="nav-item" data-view="analyses"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#analyses"></use></svg></span> Analyses</button>
+      <button class="nav-item" data-view="benchmarks"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#benchmarks"></use></svg></span> Benchmarks</button>
+      <button class="nav-item" data-view="reports"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#reports"></use></svg></span> Reports</button>
+      <button class="nav-item" data-view="settings"><span><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#settings"></use></svg></span> Settings</button>
+    </nav>
+    <div class="sidebar-help">
+      <div class="eyebrow">WORKFLOW</div>
+      <ol><li>Understand changes</li><li>Collect evidence</li><li>Analyze risks</li><li>Verify claims</li><li>Give a decision</li></ol>
+    </div>
+    <div class="sidebar-footer"><div>ChangeGuard <span class="muted">v0.4.1</span></div><div class="online"><i></i> Backend connected</div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="breadcrumbs" id="breadcrumbs"><span>Analysis</span><b>/</b><strong>PR #184</strong></div>
+      <div class="top-actions">
+        <button class="icon-btn" id="compactToggle" title="Toggle density">◐</button>
+        <button class="secondary icon-label" id="githubBtn"><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#repo-integration"></use></svg> GitHub Integration</button>
+        <div class="avatar">RT</div>
+      </div>
+    </header>
+
+    <section id="analysisView" class="page view-section">
+      <div class="hero-row">
+        <div class="pr-title-wrap">
+          <div class="pr-icon"><svg class="ui-icon lg"><use href="/assets/changeguard-svg-icons/sprite.svg#risk"></use></svg></div>
+          <div>
+            <div class="title-line"><h1 id="analysisTitle">PR #184: Reduce memory limit for checkout-api</h1><span class="pill info">OPEN</span></div>
+            <div class="meta" id="analysisMeta">EritikWoW/feature/reduce-memory <span>→</span> main · updated 2h ago</div>
+          </div>
+        </div>
+        <div class="hero-actions"><button class="secondary icon-label" id="rerunBtn"><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#rerun"></use></svg> Re-run Analysis</button><button class="primary icon-label" id="shareBtn"><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#share"></use></svg> Share</button></div>
+      </div>
+
+      <div class="stepper" id="stepper">
+        <div class="step done"><span>1</span><label>Understand</label></div><div class="line"></div>
+        <div class="step done"><span>2</span><label>Collect Context</label></div><div class="line"></div>
+        <div class="step done"><span>3</span><label>Analyze Risks</label></div><div class="line"></div>
+        <div class="step done"><span>4</span><label>Verify Claims</label></div><div class="line"></div>
+        <div class="step active"><span>5</span><label>Final Decision</label></div>
+      </div>
+
+      <div class="workspace">
+          <section class="card summary-card area-summary">
+            <h3>Analysis Summary</h3>
+            <div class="verdict block" id="summaryVerdict"><div class="verdict-title">⊖ BLOCK</div><small>High-risk change detected</small></div>
+            <dl class="kv"><div><dt>Risk Level</dt><dd><span class="pill danger">HIGH</span></dd></div><div><dt>Confidence</dt><dd id="confidenceVal">93%</dd></div><div><dt>Files Changed</dt><dd id="filesChangedVal">3</dd></div><div><dt>Analysis Time</dt><dd id="analysisTimeVal">18.4s</dd></div></dl>
+          </section>
+          <section class="card area-files">
+            <div class="card-head"><h3 id="filesHeading">Files Changed (3)</h3><button class="text-btn">View all</button></div>
+            <div id="filesList"><div class="file-row selected"><div><b>deployment.yaml</b><small>k8s/checkout-api/</small></div><span class="pill danger">HIGH</span></div><div class="file-row"><div><b>values.yaml</b><small>helm/checkout-api/</small></div><span class="pill warn">MEDIUM</span></div><div class="file-row"><div><b>README.md</b><small>docs/</small></div><span class="pill success">LOW</span></div></div>
+          </section>
+          <section class="card area-risk">
+            <h3>Risk Categories</h3>
+            <div class="risk-bars">
+              <div><span>Reliability</span><b>92</b><i><em style="width:92%"></em></i></div>
+              <div><span>Availability</span><b>84</b><i><em style="width:84%"></em></i></div>
+              <div><span>Performance</span><b>68</b><i><em style="width:68%"></em></i></div>
+              <div><span>Security</span><b>8</b><i><em style="width:8%"></em></i></div>
+              <div><span>Cost</span><b>12</b><i><em style="width:12%"></em></i></div>
+            </div>
+          </section>
+
+          <section class="card area-predicted"><h3>Predicted Failure</h3><div class="alert danger-box"><div class="alert-icon"><svg class="ui-icon"><use href="/assets/changeguard-svg-icons/sprite.svg#warn"></use></svg></div><div><b id="predictedFailure">OOMKilled (Out Of Memory)</b><p id="failureDetail">The container is likely to be killed because the proposed memory limit is below observed production demand.</p></div></div></section>
+          <section class="card area-why"><h3>Why this is risky</h3><p class="body-copy" id="whyRisky">The change reduces the memory limit from <code>512Mi</code> to <code>256Mi</code>, while current p95 usage is <code>412Mi</code> and the observed peak is <code>487Mi</code>.</p></section>
+          <section class="card blast-card area-blast"><div class="card-head"><div><h3>Blast Radius</h3><small id="blastSubtitle">Dependency path inferred from repository context</small></div><span class="pill info" id="blastBadge">NOT INFERRED</span></div><div class="blast-graph" id="blastGraph"><div class="detail-block"><b>Not inferred</b><small>Deterministic analysis does not infer service dependencies.</small></div></div></section>
+          <section class="card recommendation area-recommendation"><h3>Recommendation</h3><p id="recommendationText">Do not merge this change. Increase the memory limit to at least <code>600Mi</code>, then rerun verification.</p></section>
+          <section class="card diff-card area-change" id="diffCard">
+            <div class="card-head"><div><h3>Change Overview</h3><small>k8s/checkout-api/deployment.yaml</small></div><div class="segmented"><button class="active">Unified</button><button>Side by side</button></div></div>
+            <div class="diff" id="diffView"><div><span class="ln">23</span><code>resources:</code></div><div><span class="ln">24</span><code>  limits:</code></div><div class="removed evidence-target" data-evidence="EV-001"><span class="ln">25</span><code>-   memory: "512Mi"</code></div><div class="added evidence-target" data-evidence="EV-001"><span class="ln">25</span><code>+   memory: "256Mi"</code></div><div><span class="ln">26</span><code>    cpu: "500m"</code></div></div>
+          </section>
+
+          <section class="card trajectory-card area-trajectory">
+            <div class="card-head"><div><h3>Analysis Trajectory</h3><small>Full agent execution path · 5 stages · 18.4s</small></div><button class="text-btn" id="trajectoryToggle">Collapse</button></div>
+            <div class="trajectory" id="trajectory">
+              <button class="traj-row" data-detail="change"><span class="traj-num">01</span><div><b>Change Analyzer</b><small>Parsed diff and normalized memory limit change.</small></div><span class="pill success">2.1s</span></button>
+              <button class="traj-row" data-detail="evidence"><span class="traj-num">02</span><div><b>Evidence Collector</b><small>3 tool calls · metrics + dependency context.</small></div><span class="pill success">5.7s</span></button>
+              <button class="traj-row" data-detail="risk"><span class="traj-num">03</span><div><b>Risk Analyzer</b><small>Generated 3 hypotheses; OOM risk ranked first.</small></div><span class="pill success">4.8s</span></button>
+              <button class="traj-row" data-detail="verify"><span class="traj-num">04</span><div><b>Verifier</b><small>3 supported claims · 1 rejected claim · 1 retry.</small></div><span class="pill warn">4.1s</span></button>
+              <button class="traj-row" data-detail="decision"><span class="traj-num">05</span><div><b>Decision</b><small>Evidence threshold exceeded → BLOCK.</small></div><span class="pill danger">1.7s</span></button>
+            </div>
+          </section>
+
+          <section class="card area-evidence">
+            <div class="card-head"><h3 id="evidenceHeading">Evidence (3)</h3><button class="text-btn">View all</button></div>
+            <div class="evidence" id="evidenceList">
+              <button class="evidence-row" data-evidence="EV-001"><span class="check"><svg class="ui-icon sm"><use href="/assets/changeguard-svg-icons/sprite.svg#evidence"></use></svg></span><div><b><em>EV-001</em> deployment.yaml</b><small>Memory limit changed <code>512Mi → 256Mi</code></small></div><span class="muted">L25</span></button>
+              <button class="evidence-row" data-evidence="EV-002"><span class="check"><svg class="ui-icon sm"><use href="/assets/changeguard-svg-icons/sprite.svg#evidence"></use></svg></span><div><b><em>EV-002</em> Current p95 memory</b><small><code>412Mi</code> · metrics (7d)</small></div></button>
+              <button class="evidence-row" data-evidence="EV-003"><span class="check"><svg class="ui-icon sm"><use href="/assets/changeguard-svg-icons/sprite.svg#evidence"></use></svg></span><div><b><em>EV-003</em> Max observed memory</b><small><code>487Mi</code> · metrics (7d)</small></div></button>
+            </div>
+          </section>
+          <section class="card area-verification"><h3>Verification Results</h3><div id="verificationContent"></div></section>
+          <section class="card decision-card area-decision"><div class="card-head"><h3>Final Decision</h3><span class="pill info" id="finalConfidencePill">—</span></div><div class="final-decision" id="finalDecisionBox"><strong>—</strong><span>—</span></div><div class="decision-actions three"><button class="secondary" data-action="report">Full Report</button><button class="secondary" data-action="evidence">Evidence</button><button class="primary" id="createReviewBtn">Create GitHub Review</button></div></section>
+          <section class="card run-details area-run"><div class="card-head"><h3>Run Details</h3><span class="pill info">REPRODUCIBLE</span></div><dl class="kv compact-kv" id="runDetailsList"></dl></section>
+      </div>
+    </section>
+
+    <section id="dashboardView" class="page view-section hidden">
+      <div class="page-title"><div><h1>Dashboard</h1><p>Infrastructure change risk from real saved analyses.</p></div><button class="primary" data-go="analysis">+ New Analysis</button></div>
+      <div class="stats-grid" id="dashboardStats"></div>
+      <div class="dashboard-grid"><section class="card"><div class="card-head"><h3>Recent Analyses</h3><button class="text-btn" data-go="analyses">View all</button></div><div class="table-list" id="dashboardRecent"></div></section><section class="card"><h3>Analysis Trend</h3><div class="mini-chart" id="dashboardTrend"></div><div class="chart-caption" id="dashboardTrendLabels"></div></section></div>
+    </section>
+
+    <section id="analysesView" class="page view-section hidden">
+      <div class="page-title"><div><h1>Analyses</h1><p>History loaded from the local ChangeGuard database.</p></div><button class="primary" data-go="analysis">+ New Analysis</button></div>
+      <section class="card"><div class="toolbar"><input class="search" id="analysisSearch" placeholder="Search PR, repository, title..."><div class="filters" id="analysisFilters"><button class="filter active" data-filter="all">All</button><button class="filter" data-filter="block">Blocked</button><button class="filter" data-filter="warn">Warnings</button><button class="filter" data-filter="pass">Passed</button></div></div><div class="analysis-table" id="analysisTable"></div></section>
+    </section>
+
+    <section id="benchmarksView" class="page view-section hidden">
+      <div class="page-title"><div><h1>Benchmarks</h1><p>Executable deterministic benchmark against a simple baseline.</p></div><button class="secondary" id="runBenchmarkBtn">Run Benchmark</button></div>
+      <div id="benchmarkContent"><section class="card"><p class="muted">No benchmark result loaded yet.</p></section></div>
+    </section>
+
+    <section id="reportsView" class="page view-section hidden">
+      <div class="page-title"><div><h1>Reports</h1><p>Reports generated from real saved analysis runs.</p></div><button class="secondary" id="exportAllReportsBtn">Export index</button></div>
+      <div class="report-grid" id="reportsGrid"></div>
+    </section>
+
+    <section id="settingsView" class="page view-section hidden">
+      <div class="page-title"><div><h1>Settings</h1><p>Connections, analysis policy and runtime configuration.</p></div></div>
+      <div class="settings-grid">
+        <section class="card"><h3>GitHub</h3><div class="setting-row"><div><b>Repository integration</b><small id="githubStatusText">Checking...</small></div><button class="secondary" id="githubConnectBtn">Configure</button></div><div class="setting-row"><div><b>Default repository</b><small id="defaultRepoText">Not set</small></div><button class="text-btn" id="defaultRepoBtn">Change</button></div></section>
+        <section class="card"><h3>Analysis Policy</h3><label class="setting-field"><span>Block threshold</span><input id="blockThreshold" type="range" min="50" max="100" value="85"><small id="blockThresholdText">85% confidence</small></label><label class="check-row"><input id="requireEvidence" type="checkbox" checked> Require evidence for every blocking claim</label><label class="check-row"><input id="rejectBlast" type="checkbox" checked> Reject unsupported blast-radius claims</label><button class="secondary" id="savePolicyBtn">Save policy</button></section>
+        <section class="card"><h3>Runtime</h3><div class="setting-row"><div><b>LLM provider</b><small id="llmStatusText">Not configured</small></div><button class="secondary" id="llmConfigureBtn">Configure</button></div><div class="setting-row"><div><b>Trajectory logging</b><small>Store tool calls, retries and verification results.</small></div><span class="pill success">ENABLED</span></div></section>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="drawer" id="drawer"><div class="drawer-panel"><div class="drawer-head"><div><h2 id="drawerTitle">Trajectory Detail</h2><p id="drawerSubtitle">Execution details</p></div><button class="icon-btn" id="drawerClose">×</button></div><div id="drawerBody" class="drawer-body"></div></div></div>
+<div class="modal" id="newAnalysisModal"><div class="modal-card"><div class="drawer-head"><div><h2>New Analysis</h2><p>Analyze a pull request or local change set.</p></div><button class="icon-btn modal-close">×</button></div><label class="field"><span>GitHub PR URL</span><input id="prUrlInput" value="https://github.com/EritikWoW/SentinelOps/pull/1" placeholder="https://github.com/owner/repo/pull/123"></label><label class="field"><span>Repository context</span><select><option>Auto-detect from PR</option><option>Repository only</option><option>Repository + runtime metrics</option></select></label><div class="modal-actions"><button class="secondary modal-close">Cancel</button><button class="primary" id="startAnalysisBtn">Start Analysis</button></div></div></div>
+<div class="toast" id="toast"></div>
+<script src="/assets/app.js"></script>
+</body>
+</html>
