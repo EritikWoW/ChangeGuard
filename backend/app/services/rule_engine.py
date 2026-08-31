@@ -39,6 +39,7 @@ def analyze_file(path: str, patch: str | None) -> list[Finding]:
     full = "\n".join(_added_lines(patch))
     removed = "\n".join(_removed_lines(patch))
     low = full.lower()
+    removed_low = removed.lower()
     findings: list[Finding] = []
 
     if name in {"dockerfile", "containerfile"}:
@@ -68,7 +69,7 @@ def analyze_file(path: str, patch: str | None) -> list[Finding]:
                 "The security context permits UID 0/root execution.", path,
                 ["Kubernetes securityContext changed"], "Require runAsNonRoot and a non-zero UID."
             ))
-        if "resources:" in removed and "resources:" not in full:
+        if "resources:" in removed_low and "resources:" not in low:
             findings.append(Finding(
                 "k8s-resources-removed", Severity.HIGH, "Resource controls removed",
                 "The patch appears to remove Kubernetes resource configuration.", path,
@@ -89,7 +90,7 @@ def analyze_file(path: str, patch: str | None) -> list[Finding]:
                     f"Memory limit decreases from {old}Mi to {new}Mi ({(1-ratio)*100:.0f}% reduction). This can increase OOMKill risk if runtime usage is unchanged.", path,
                     [f"memory limit {old}Mi -> {new}Mi"], "Validate against production p95/max memory before merging."
                 ))
-        if "readinessprobe:" in removed and "readinessprobe:" not in low:
+        if "readinessprobe:" in removed_low and "readinessprobe:" not in low:
             findings.append(Finding(
                 "k8s-readiness-removed", Severity.HIGH, "Readiness probe removed",
                 "The patch appears to remove the workload readiness probe.", path,
@@ -128,3 +129,29 @@ def summarize(findings: list[Finding]) -> tuple[Decision, Severity, float]:
     if highest in {Severity.CRITICAL, Severity.HIGH}:
         return Decision.BLOCK, highest, min(0.98, 0.83 + 0.03 * len(findings))
     return Decision.WARN, highest, min(0.94, 0.72 + 0.04 * len(findings))
+
+
+def summarize_agentic(
+    deterministic_findings: list[Finding],
+    verified_llm_findings: list[Finding],
+) -> tuple[Decision, Severity, float]:
+    """Gate policy for the agentic reviewer.
+
+    Deterministic evidence is allowed to make blocking decisions. An exact LLM
+    evidence quote proves provenance, but by itself it does not prove that a
+    benign change is hazardous. Therefore low/medium LLM-only findings remain
+    advisory, while high/critical LLM-only findings escalate to WARN for human
+    review rather than autonomously blocking a change.
+    """
+    if deterministic_findings:
+        return summarize(deterministic_findings + verified_llm_findings)
+    if not verified_llm_findings:
+        return Decision.PASS, Severity.LOW, 0.88
+
+    highest = max((f.severity for f in verified_llm_findings), key=lambda s: SEVERITY_WEIGHT[s])
+    if highest in {Severity.CRITICAL, Severity.HIGH}:
+        return Decision.WARN, highest, min(0.86, 0.68 + 0.03 * len(verified_llm_findings))
+
+    # Exact evidence location is retained in the report, but an uncorroborated
+    # low/medium hypothesis does not change the merge gate.
+    return Decision.PASS, Severity.LOW, 0.78
