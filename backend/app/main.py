@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
+from app.api.hackathon_routes import router as hackathon_router
 from app.core.config import settings
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
@@ -16,6 +17,7 @@ app.add_middleware(
 
 # API routes are registered before static/frontend mounts.
 app.include_router(router)
+app.include_router(hackathon_router)
 
 # The frontend references CSS, JS and SVG files through /assets/*.
 # Mount the frontend directory at /assets first so these URLs resolve to
