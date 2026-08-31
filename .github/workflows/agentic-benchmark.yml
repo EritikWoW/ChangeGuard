@@ -1,0 +1,116 @@
+name: Agentic Benchmark
+
+on:
+  workflow_dispatch:
+    inputs:
+      model:
+        description: OpenAI model used by both baseline and ChangeGuard
+        required: false
+        default: gpt-5.6
+  push:
+    paths:
+      - '.github/workflows/agentic-benchmark.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CHANGEGUARD_LLM_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      CHANGEGUARD_LLM_BASE_URL: https://api.openai.com/v1
+      CHANGEGUARD_LLM_MODEL: ${{ inputs.model || 'gpt-5.6' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify secret is configured
+        shell: bash
+        run: |
+          if [ -z "$CHANGEGUARD_LLM_API_KEY" ]; then
+            echo "::error::Repository secret OPENAI_API_KEY is not configured"
+            exit 1
+          fi
+          echo "OPENAI_API_KEY is configured. Secret value will not be printed."
+
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+          cache: pip
+          cache-dependency-path: backend/pyproject.toml
+
+      - name: Install ChangeGuard
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+
+      - name: Run same-model agentic benchmark
+        working-directory: backend
+        shell: bash
+        run: |
+          mkdir -p ../artifacts
+          python - <<'PY'
+          import asyncio
+          import json
+          import os
+          from pathlib import Path
+          from app.services.benchmark_service import run_agentic_benchmark
+
+          result = asyncio.run(run_agentic_benchmark())
+          out = Path('../artifacts')
+          out.mkdir(exist_ok=True)
+          (out / 'agentic-benchmark.json').write_text(
+              json.dumps(result, indent=2, ensure_ascii=False), encoding='utf-8'
+          )
+
+          metrics = result.get('metrics', [])
+          lines = [
+              '# ChangeGuard Agentic Benchmark',
+              '',
+              f"- Model: `{os.environ.get('CHANGEGUARD_LLM_MODEL')}`",
+              f"- Cases: **{result.get('cases')}**",
+              f"- Challenging cases: **{result.get('challenging_cases')}**",
+              f"- Baseline decision accuracy: **{result.get('baseline_score')}%**",
+              f"- ChangeGuard decision accuracy: **{result.get('overall_score')}%**",
+              f"- Improvement: **{result.get('improvement'):+d} percentage points**",
+              '',
+              '## Metrics',
+              '',
+              '| Metric | Baseline | ChangeGuard |',
+              '|---|---:|---:|',
+          ]
+          for m in metrics:
+              unit = m.get('unit', '')
+              lines.append(f"| {m['name']} | {m['baseline']}{unit} | {m['changeguard']}{unit} |")
+
+          verification = result.get('verification', {})
+          lines += [
+              '',
+              '## Verification',
+              '',
+              f"- Supported AI claims: **{verification.get('supported_ai_claims', 0)}**",
+              f"- Rejected unsupported AI claims: **{verification.get('rejected_ai_claims', 0)}**",
+              '',
+              'Full per-case output is available in the workflow artifact `changeguard-agentic-benchmark`.',
+          ]
+          md = '\n'.join(lines) + '\n'
+          (out / 'agentic-benchmark.md').write_text(md, encoding='utf-8')
+          summary = os.environ.get('GITHUB_STEP_SUMMARY')
+          if summary:
+              with open(summary, 'a', encoding='utf-8') as fh:
+                  fh.write(md)
+          print(f"Benchmark complete: baseline={result.get('baseline_score')}%, changeguard={result.get('overall_score')}%")
+          PY
+
+      - name: Upload benchmark evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: changeguard-agentic-benchmark
+          path: artifacts/
+          if-no-files-found: warn
+          retention-days: 30
