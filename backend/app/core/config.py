@@ -10,6 +10,13 @@ class Settings(BaseSettings):
     request_timeout_seconds: float = 20.0
     database_path: str = "data/changeguard.db"
 
+    # Secrets may be supplied through environment variables instead of SQLite.
+    # With env_prefix below these map to CHANGEGUARD_LLM_API_KEY,
+    # CHANGEGUARD_LLM_BASE_URL and CHANGEGUARD_LLM_MODEL.
+    llm_api_key: str | None = None
+    llm_base_url: str = "https://api.openai.com/v1"
+    llm_model: str = "gpt-5.6"
+
     model_config = SettingsConfigDict(env_file=".env", env_prefix="CHANGEGUARD_", extra="ignore")
 
     @property
