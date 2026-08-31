@@ -32,9 +32,15 @@ class ConfigStore:
             for r in conn.execute("SELECT key,value FROM app_settings"):
                 try: out[r['key']]=json.loads(r['value'])
                 except Exception: out[r['key']]=r['value']
-        # env token remains a fallback without exposing it
+        # Environment-backed secrets are fallbacks only and are never persisted.
         if not out.get('github_token') and settings.github_token:
             out['github_token']=settings.github_token
+        if not out.get('llm_api_key') and settings.llm_api_key:
+            out['llm_api_key']=settings.llm_api_key
+        if out.get('llm_base_url') == DEFAULTS['llm_base_url'] and settings.llm_base_url:
+            out['llm_base_url']=settings.llm_base_url
+        if out.get('llm_model') == DEFAULTS['llm_model'] and settings.llm_model:
+            out['llm_model']=settings.llm_model
         return out
     def update(self, values: dict):
         allowed=set(DEFAULTS)
