@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # CHANGEGUARD_LLM_BASE_URL and CHANGEGUARD_LLM_MODEL.
     llm_api_key: str | None = None
     llm_base_url: str = "https://api.openai.com/v1"
-    llm_model: str = "gpt-5.6"
+    llm_model: str = "gpt-5.6-luna"
 
     model_config = SettingsConfigDict(env_file=".env", env_prefix="CHANGEGUARD_", extra="ignore")
 
