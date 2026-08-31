@@ -8,7 +8,7 @@ DEFAULTS = {
     "llm_provider": "openai-compatible",
     "llm_base_url": "https://api.openai.com/v1",
     "llm_api_key": "",
-    "llm_model": "gpt-5.6",
+    "llm_model": "gpt-5.6-luna",
     "block_threshold": 85,
     "require_evidence": True,
     "reject_unsupported_blast_radius": True,
