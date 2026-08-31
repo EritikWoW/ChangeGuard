@@ -6,7 +6,7 @@ from app.models.schemas import Severity
 from app.services.baseline_service import review_case
 from app.services.config_store import config_store
 from app.services.llm_service import analyze_with_llm
-from app.services.rule_engine import Finding, analyze_file, summarize
+from app.services.rule_engine import Finding, analyze_file, summarize, summarize_agentic
 
 
 CASES_PATH = Path(__file__).resolve().parents[2] / "benchmark" / "cases.json"
@@ -83,7 +83,8 @@ def run_smoke_benchmark() -> dict:
 
 
 async def _agentic_final(case: dict) -> tuple[str, int, int, int]:
-    findings = list(analyze_file(case["path"], case["patch"]))
+    deterministic_findings = list(analyze_file(case["path"], case["patch"]))
+    verified_llm_findings: list[Finding] = []
     llm = await analyze_with_llm(case["title"], [{"filename": case["path"], "patch": case["patch"]}])
     supported = 0
     rejected = 0
@@ -100,7 +101,7 @@ async def _agentic_final(case: dict) -> tuple[str, int, int, int]:
                 severity = Severity.MEDIUM
 
             if path == case["path"] and quote and quote in case["patch"]:
-                findings.append(
+                verified_llm_findings.append(
                     Finding(
                         "llm-verified",
                         severity,
@@ -115,7 +116,7 @@ async def _agentic_final(case: dict) -> tuple[str, int, int, int]:
             else:
                 rejected += 1
 
-    decision, _, _ = summarize(findings)
+    decision, _, _ = summarize_agentic(deterministic_findings, verified_llm_findings)
     return decision.value, supported, rejected, total_tokens
 
 
