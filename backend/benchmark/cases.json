@@ -1,0 +1,122 @@
+[
+  {
+    "id": "k8s-memory-half",
+    "title": "Reduce API memory limit by 50%",
+    "path": "k8s/api/deployment.yaml",
+    "patch": "@@\n-        memory: \"512Mi\"\n+        memory: \"256Mi\"",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "k8s-privileged",
+    "title": "Enable privileged mode",
+    "path": "k8s/worker/pod.yaml",
+    "patch": "@@\n+      securityContext:\n+        privileged: true",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "k8s-root-user",
+    "title": "Run workload as UID 0",
+    "path": "k8s/api/deployment.yml",
+    "patch": "@@\n+      securityContext:\n+        runAsUser: 0",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "k8s-readiness-removed",
+    "title": "Remove readiness probe",
+    "path": "k8s/api/deployment.yaml",
+    "patch": "@@\n-      readinessProbe:\n-        httpGet:\n-          path: /health\n-          port: 8080",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "terraform-public-ingress",
+    "title": "Expose service to the public Internet",
+    "path": "infra/network.tf",
+    "patch": "@@\n+  ingress {\n+    cidr_blocks = [\"0.0.0.0/0\"]\n+  }",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "terraform-public-access",
+    "title": "Enable public access",
+    "path": "infra/storage.tf",
+    "patch": "@@\n-  public_access = false\n+  public_access = true",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "docker-secret",
+    "title": "Bake API key into container",
+    "path": "Dockerfile",
+    "patch": "@@\n+ENV API_KEY=supersecret",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "docker-root-runtime",
+    "title": "Install packages without non-root runtime user",
+    "path": "Dockerfile",
+    "patch": "@@\n+RUN apt-get update && apt-get install -y curl",
+    "truth": "warn",
+    "challenge": false
+  },
+  {
+    "id": "github-actions-pr-target",
+    "title": "Use privileged pull_request_target workflow",
+    "path": ".github/workflows/review.yml",
+    "patch": "@@\n+on:\n+  pull_request_target:\n+jobs:\n+  review:\n+    steps:\n+      - uses: actions/checkout@v4",
+    "truth": "block",
+    "challenge": false
+  },
+  {
+    "id": "safe-replicas",
+    "title": "Scale deployment from two to three replicas",
+    "path": "k8s/api/deployment.yaml",
+    "patch": "@@\n-  replicas: 2\n+  replicas: 3",
+    "truth": "pass",
+    "challenge": false
+  },
+  {
+    "id": "safe-label",
+    "title": "Add application version label",
+    "path": "k8s/api/deployment.yaml",
+    "patch": "@@\n+    app.kubernetes.io/version: v2",
+    "truth": "pass",
+    "challenge": false
+  },
+  {
+    "id": "safe-doc",
+    "title": "Document deployment procedure",
+    "path": "README.md",
+    "patch": "@@\n+## Deployment notes\n+Use the standard production pipeline.",
+    "truth": "pass",
+    "challenge": false
+  },
+  {
+    "id": "safe-timeout-small",
+    "title": "Increase proxy timeout slightly",
+    "path": "nginx.conf",
+    "patch": "@@\n-proxy_read_timeout 30s;\n+proxy_read_timeout 35s;",
+    "truth": "pass",
+    "challenge": false
+  },
+  {
+    "id": "challenge-multi-signal",
+    "title": "Reduce memory and remove readiness checks in one change",
+    "path": "k8s/checkout/deployment.yaml",
+    "patch": "@@\n-        memory: \"1Gi\"\n+        memory: \"256Mi\"\n-      readinessProbe:\n-        httpGet:\n-          path: /ready",
+    "truth": "block",
+    "challenge": true
+  },
+  {
+    "id": "challenge-false-positive-trap",
+    "title": "Mention privileged mode only in documentation",
+    "path": "docs/security.md",
+    "patch": "@@\n+Never deploy containers with `privileged: true`; ChangeGuard should block such changes.",
+    "truth": "pass",
+    "challenge": true
+  }
+]
