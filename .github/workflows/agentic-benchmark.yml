@@ -13,6 +13,8 @@ on:
       - 'backend/app/services/baseline_service.py'
       - 'backend/app/services/llm_service.py'
       - 'backend/app/services/benchmark_service.py'
+      - 'backend/app/services/rule_engine.py'
+      - 'backend/app/services/analysis_service.py'
       - 'backend/benchmark/cases.json'
 
 permissions:
