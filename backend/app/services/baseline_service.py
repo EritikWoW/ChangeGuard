@@ -20,6 +20,16 @@ def _extract_json(text: str) -> dict:
     return json.loads(text)
 
 
+def _raise_api_error(response: httpx.Response) -> None:
+    if response.is_success:
+        return
+    try:
+        detail = response.json().get("error", {}).get("message") or response.text
+    except Exception:
+        detail = response.text
+    raise RuntimeError(f"LLM API HTTP {response.status_code}: {detail[:800]}")
+
+
 async def review_case(title: str, path: str, patch: str) -> dict:
     """Single-prompt baseline using the same configured model as ChangeGuard."""
     cfg = config_store.get_all()
@@ -37,7 +47,8 @@ async def review_case(title: str, path: str, patch: str) -> dict:
                 "content": f"PR title: {title}\nFILE: {path}\nPATCH:\n{patch}",
             },
         ],
-        "temperature": 0,
+        "reasoning_effort": "low",
+        "response_format": {"type": "json_object"},
     }
     headers = {
         "Authorization": f"Bearer {key}",
@@ -45,7 +56,7 @@ async def review_case(title: str, path: str, patch: str) -> dict:
     }
     async with httpx.AsyncClient(timeout=60, headers=headers) as client:
         response = await client.post(base + "/chat/completions", json=body)
-    response.raise_for_status()
+    _raise_api_error(response)
     payload = response.json()
     result = _extract_json(payload["choices"][0]["message"]["content"])
     decision = str(result.get("decision", "warn")).lower()
