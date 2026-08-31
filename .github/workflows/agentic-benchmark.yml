@@ -35,6 +35,22 @@ jobs:
           fi
           echo "OPENAI_API_KEY is configured. Secret value will not be printed."
 
+      - name: Verify OpenAI authentication
+        shell: bash
+        run: |
+          STATUS=$(curl -sS -o /tmp/openai-preflight.json -w "%{http_code}" \
+            -H "Authorization: Bearer $CHANGEGUARD_LLM_API_KEY" \
+            "$CHANGEGUARD_LLM_BASE_URL/models")
+          if [ "$STATUS" = "401" ]; then
+            echo "::error::OpenAI rejected OPENAI_API_KEY (HTTP 401). Replace the GitHub repository secret with a valid OpenAI Platform API key."
+            exit 1
+          fi
+          if [ "$STATUS" -lt 200 ] || [ "$STATUS" -ge 300 ]; then
+            echo "::error::OpenAI API preflight failed with HTTP $STATUS. Check API account access/billing and retry."
+            exit 1
+          fi
+          echo "OpenAI authentication succeeded."
+
       - name: Set up Python 3.14
         uses: actions/setup-python@v5
         with:
