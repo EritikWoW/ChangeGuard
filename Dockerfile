@@ -5,11 +5,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-COPY backend/pyproject.toml backend/README.md /app/backend/
+COPY . /app
+
 RUN python -m pip install --no-cache-dir --upgrade pip && \
     python -m pip install --no-cache-dir -e /app/backend
-
-COPY . /app
 
 WORKDIR /app/backend
 EXPOSE 8000
