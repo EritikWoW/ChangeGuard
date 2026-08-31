@@ -1,0 +1,12 @@
+services:
+  changeguard:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      CHANGEGUARD_DATABASE_PATH: /app/backend/data/changeguard.db
+    volumes:
+      - changeguard-data:/app/backend/data
+
+volumes:
+  changeguard-data:
