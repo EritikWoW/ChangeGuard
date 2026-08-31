@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
     app_name: str = "ChangeGuard"
-    app_version: str = "0.5.0"
+    app_version: str = "0.6.0"
     github_token: str | None = None
     github_api_url: str = "https://api.github.com"
     request_timeout_seconds: float = 20.0
